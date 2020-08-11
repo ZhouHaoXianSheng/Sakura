@@ -12,6 +12,8 @@
     <modules>
         <module>consumer-8080</module>
         <module>company-8090</module>
+        <module>gateway</module>
+        <module>common</module>
     </modules>
 
 </project>

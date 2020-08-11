@@ -1,0 +1,38 @@
+server:
+  port: 88
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      #解决gateway因为netty多次设置跨域请求头的bug
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials Access-Control-Allow-Headers Access-Control-Allow-Methods
+      #配置跨域（gateway配置方式）
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            # 允许携带认证信息
+            # 允许跨域的源(网站域名/ip)，设置*为全部
+            # 允许跨域请求里的head字段，设置*为全部
+            # 允许跨域的method， 默认为GET和OPTIONS，设置*为全部
+            # 跨域允许的有效期
+            allow-credentials: true
+            allowed-origins: "*"
+            allowed-headers: "*"
+            allowed-methods: "*"
+      #配置路由规则
+      routes:
+        - id: company_route
+          uri: lb://company
+          predicates:
+            - Path=/company/**
+          filters:
+            - RewritePath=/company/(?<segment>/?.*), /$\{segment}
+        - id: consumer_route
+          uri: lb://consumer
+          predicates:
+            - Path=/consumer/**
+          filters:
+            - RewritePath=/consumer/(?<segment>/?.*), /$\{segment}
+

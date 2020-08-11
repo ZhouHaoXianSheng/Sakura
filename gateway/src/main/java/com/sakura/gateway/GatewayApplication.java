@@ -1,20 +1,19 @@
-package com.sakura.company;
+package com.sakura.gateway;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import tk.mybatis.spring.annotation.MapperScan;
 
 /**
  * @author Mr.Zhou
  */
-@SpringBootApplication
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 @EnableDiscoveryClient
-@MapperScan(basePackages = "com.sakura.company.dao")
-public class CompanyApplication {
+public class GatewayApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(CompanyApplication.class, args);
+        SpringApplication.run(GatewayApplication.class, args);
     }
 
 }

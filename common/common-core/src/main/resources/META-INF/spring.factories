@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.sakura.common.core.config.RedisTemplateConfig,\
+  com.sakura.common.core.config.RestTemplateConfiguration

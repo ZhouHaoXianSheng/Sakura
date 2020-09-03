@@ -1,38 +1,89 @@
+#server:
+#  port: 88
+#spring:
+#  application:
+#    name: gateway
+#  cloud:
+#    gateway:
+#      #解决gateway因为netty多次设置跨域请求头的bug
+#      default-filters:
+#        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials Access-Control-Allow-Headers Access-Control-Allow-Methods
+#      #配置跨域（gateway配置方式）
+#      globalcors:
+#        cors-configurations:
+#          '[/**]':
+#            # 允许携带认证信息
+#            # 允许跨域的源(网站域名/ip)，设置*为全部
+#            # 允许跨域请求里的head字段，设置*为全部
+#            # 允许跨域的method， 默认为GET和OPTIONS，设置*为全部
+#            # 跨域允许的有效期
+#            allow-credentials: true
+#            allowed-origins: "*"
+#            allowed-headers: "*"
+#            allowed-methods: "*"
+#      #配置路由规则
+#      routes:
+#        #公司模块
+#        - id: company_route
+#          uri: lb://company
+#          predicates:
+#            - Path=/company/**
+#          filters:
+#            - RewritePath=/company/(?<segment>/?.*), /$\{segment}
+#        #消费者模块
+#        - id: consumer_route
+#          uri: lb://consumer
+#          predicates:
+#            - Path=/consumer/**
+#          filters:
+#            - RewritePath=/consumer/(?<segment>/?.*), /$\{segment}
+#
 server:
-  port: 88
+  port: 9999
+
 spring:
   application:
     name: gateway
   cloud:
+    nacos:
+      discovery:
+        server-addr: ${NACOS_HOST:127.0.0.1}:${NACOS_PORT:8848}
+      config:
+        server-addr: ${spring.cloud.nacos.discovery.server-addr}
     gateway:
-      #解决gateway因为netty多次设置跨域请求头的bug
-      default-filters:
-        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials Access-Control-Allow-Headers Access-Control-Allow-Methods
-      #配置跨域（gateway配置方式）
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            # 允许携带认证信息
-            # 允许跨域的源(网站域名/ip)，设置*为全部
-            # 允许跨域请求里的head字段，设置*为全部
-            # 允许跨域的method， 默认为GET和OPTIONS，设置*为全部
-            # 跨域允许的有效期
-            allow-credentials: true
-            allowed-origins: "*"
-            allowed-headers: "*"
-            allowed-methods: "*"
-      #配置路由规则
+      locator:
+        enabled: true
       routes:
-        - id: company_route
-          uri: lb://company
+        # 认证中心
+        - id: pig-auth
+          uri: lb://sakura-auth
           predicates:
-            - Path=/company/**
+            - Path=/auth/**
           filters:
-            - RewritePath=/company/(?<segment>/?.*), /$\{segment}
-        - id: consumer_route
-          uri: lb://consumer
+            # 验证码处理
+            - ValidateCodeGatewayFilter
+            # 前端密码解密
+            - PasswordDecoderFilter
+        #UPMS 模块
+        - id: my-userserver
+          uri: lb://sakura-user
           predicates:
-            - Path=/consumer/**
+            - Path=/admin/**
           filters:
-            - RewritePath=/consumer/(?<segment>/?.*), /$\{segment}
+            # 限流配置
+            - name: RequestRateLimiter
+              args:
+                key-resolver: '#{@remoteAddrKeyResolver}'
+                redis-rate-limiter.replenishRate: 100
+                redis-rate-limiter.burstCapacity: 200
 
+
+security:
+  encode:
+    # 前端密码密钥，必须16位
+    key: 'thanks,pig4cloud'
+
+# 不校验验证码终端
+ignore:
+  clients:
+    - test

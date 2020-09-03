@@ -1,8 +1,6 @@
 package com.sakura.consumer.vo;
 
 import lombok.Data;
-
-import javax.persistence.Column;
 import java.util.Date;
 
 /**

@@ -1,0 +1,7 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.sakura.user.detail.feign.fallback.RemoteUserServiceFallbackImpl,\
+  com.sakura.user.detail.feign.fallback.RemoteLogServiceFallbackImpl,\
+  com.sakura.user.detail.feign.fallback.RemoteTokenServiceFallbackImpl,\
+  com.sakura.user.detail.feign.factory.RemoteUserServiceFallbackFactory,\
+  com.sakura.user.detail.feign.factory.RemoteLogServiceFallbackFactory,\
+  com.sakura.user.detail.feign.factory.RemoteTokenServiceFallbackFactory

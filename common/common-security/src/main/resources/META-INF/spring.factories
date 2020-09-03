@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.sakura.security.service.SakuraUserDetailsServiceImpl,\
+  com.sakura.security.annotation.component.SakuraSecurityInnerAspect
+
